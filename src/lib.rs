@@ -47,6 +47,10 @@ pub fn CreateTriangleGeometry(
     unsafe {
         let geom = rtcNewGeometry(device.clone(), RTCGeometryType::TRIANGLE);
 
+        if geom.is_null() {
+            panic!("Failed to create triangle RTCGeometry");
+        }
+
         let vertexBuffPtr = rtcSetNewGeometryBuffer(
             geom,
             RTCBufferType::VERTEX,
@@ -89,6 +93,46 @@ pub fn CreateTriangleGeometry(
             indexBuff[3 * i + 1] = idx.1;
             indexBuff[3 * i + 2] = idx.2;
         }
+
+        rtcCommitGeometry(geom);
+        rtcAttachGeometry(scene.clone(), geom);
+        rtcReleaseGeometry(geom);
+    }
+}
+
+pub fn CreateSphereGeometry(
+    device: &RTCDevice,
+    scene: &RTCScene,
+    center: (f32, f32, f32),
+    radius: f32,
+) {
+    unsafe {
+        let geom = rtcNewGeometry(device.clone(), RTCGeometryType::SPHERE_POINT);
+
+        if geom.is_null() {
+            panic!("Failed to create sphere RTCGeometry");
+        }
+
+        let vertexCount = 1;    // center coordinate
+
+        let sphereBuffPtr = rtcSetNewGeometryBuffer(
+            geom,
+            RTCBufferType::VERTEX,
+            0,
+            RTCFormat::FLOAT4,
+            4 * size_of::<f32>(),
+            vertexCount,
+        );
+
+        if sphereBuffPtr.is_null() {
+            panic!("Could not create sphere buffer");
+        }
+
+        let sphereBuff = slice::from_raw_parts_mut(sphereBuffPtr as *mut f32, 4 * vertexCount);
+        sphereBuff[0] = center.0;
+        sphereBuff[1] = center.1;
+        sphereBuff[2] = center.2;
+        sphereBuff[3] = radius;
 
         rtcCommitGeometry(geom);
         rtcAttachGeometry(scene.clone(), geom);
