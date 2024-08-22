@@ -11,21 +11,21 @@ use bindings_embree::*;
 pub const INVALID_GEOMETRY_ID: u32 = <u32>::MAX;
 
 // Enums
-pub type Format = RTCFormat;
-pub type BuildQuality = RTCBuildQuality;
-pub type DeviceProperty = RTCDeviceProperty;
-pub type Error = RTCError;
-pub type BufferType = RTCBufferType;
-pub type GeometryType = RTCGeometryType;
-pub type SubdivisionMode = RTCSubdivisionMode;
+pub type EmbreeFormat = RTCFormat;
+pub type EmbreeBuildQuality = RTCBuildQuality;
+pub type EmbreeDeviceProperty = RTCDeviceProperty;
+pub type EmbreeError = RTCError;
+pub type EmbreeBufferType = RTCBufferType;
+pub type EmbreeGeometryType = RTCGeometryType;
+pub type EmbreeSubdivisionMode = RTCSubdivisionMode;
 
 // Objects
-pub type Device = RTCDevice;
-pub type Scene = RTCScene;
-pub type Geometry = RTCGeometry;
-pub type Ray = RTCRay;
-pub type Hit = RTCHit;
-pub type RayHit = RTCRayHit;
+pub type EmbreeDevice = RTCDevice;
+pub type EmbreeScene = RTCScene;
+pub type EmbreeGeometry = RTCGeometry;
+pub type EmbreeRay = RTCRay;
+pub type EmbreeHit = RTCHit;
+pub type EmbreeRayHit = RTCRayHit;
 
 // API
 pub fn CreateDevice() -> RTCDevice {
@@ -42,7 +42,7 @@ pub fn CreateTriangleGeometry(
     device: &RTCDevice,
     scene: &RTCScene,
     vertices: &[(f32, f32, f32)],
-    indices: &[(i32, i32, i32)],
+    indices: &[(u32, u32, u32)],
 ) {
     unsafe {
         let geom = rtcNewGeometry(device.clone(), RTCGeometryType::TRIANGLE);
@@ -78,7 +78,7 @@ pub fn CreateTriangleGeometry(
         }
 
         let vertexBuff = slice::from_raw_parts_mut(vertexBuffPtr as *mut f32, 3 * vertices.len());
-        let indexBuff = slice::from_raw_parts_mut(indexBuffPtr as *mut i32, 3 * indices.len());
+        let indexBuff = slice::from_raw_parts_mut(indexBuffPtr as *mut u32, 3 * indices.len());
 
         // Copy vertices into buffer
         for (i, v) in vertices.iter().enumerate() {
@@ -144,9 +144,9 @@ pub fn CommitScene(scene: &RTCScene) {
     unsafe { rtcCommitScene(scene.clone()); };
 }
 
-pub fn CastRay(scene: &RTCScene, ray: (f32, f32, f32, f32, f32, f32)) -> Option<RayHit> {
-    let mut rayhit = RayHit {
-        ray: Ray {
+pub fn CastRay(scene: &RTCScene, ray: (f32, f32, f32, f32, f32, f32)) -> Option<EmbreeRayHit> {
+    let mut rayhit = EmbreeRayHit {
+        ray: EmbreeRay {
             org_x: ray.0,
             org_y: ray.1,
             org_z: ray.2,
@@ -160,7 +160,7 @@ pub fn CastRay(scene: &RTCScene, ray: (f32, f32, f32, f32, f32, f32)) -> Option<
             id: 0,
             flags: 0,
         },
-        hit: Hit {
+        hit: EmbreeHit {
             Ng_x: 0.0,
             Ng_y: 0.0,
             Ng_z: 0.0,
