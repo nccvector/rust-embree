@@ -3,7 +3,7 @@
 use std::path::Path;
 
 fn main() {
-    let wrapperPath = Path::new("external/embree/include/embree4/rtcore.h");
+    let wrapperPath = Path::new("embree/include/embree4/rtcore.h");
     let bindingsOutput = "src/bindings_embree.rs";
     let linkLibraryName = "embree4";
 
@@ -54,11 +54,8 @@ fn main() {
             "pub type __ssize_t = ::std::os::raw::c_long",
             "pub type __ssize_t = isize",
         )
-        .replace(
-            ": ::std::os::raw::c_uint",
-            ": u32",
-        )
-        ;
+        .replace(": ::std::os::raw::c_uint", ": u32");
 
-    std::fs::write(bindingsOutput, bindingsSource).expect("Could not write bindings to output path");
+    std::fs::write(bindingsOutput, bindingsSource)
+        .expect("Could not write bindings to output path");
 }
